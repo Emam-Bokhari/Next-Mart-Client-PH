@@ -1,8 +1,9 @@
-import { getCurrentUser } from "@/services/AuthService";
+"use client";
+import { useUser } from "@/context/UserContext";
 import { Fragment } from "react";
 
-export default async function HomePage() {
-  const user = await getCurrentUser();
+export default function HomePage() {
+  const user = useUser();
   console.log(user);
   return (
     <Fragment>

@@ -2,6 +2,7 @@
 import { jwtDecode } from "jwt-decode"
 import { cookies } from "next/headers"
 import { FieldValues } from "react-hook-form"
+import { toast } from "sonner"
 
 export const registerUser = async (userData: FieldValues) => {
     try {
@@ -50,14 +51,43 @@ export const loginUser = async (userData: FieldValues) => {
 }
 
 export const getCurrentUser = async () => {
-    const accessToken = (await cookies()).get("accessToken")!.value;
+    const accessTokenCookie = (await cookies()).get("accessToken")
+
+    if (!accessTokenCookie) {
+        return { error: true, message: "Access token not found in cookies" };
+    }
+
+    const accessToken = accessTokenCookie.value;
+
     let decodedData = null;
 
     if (accessToken) {
-        decodedData = await jwtDecode(accessToken)
-        return decodedData;
+        try {
+            decodedData = await jwtDecode(accessToken)
+            return decodedData;
+        } catch (error: any) {
+            return { error: true, message: "Error decoding access token." };
+        }
     }
 
-    return null;
+    return decodedData;
 
+}
+
+export const recaptchaTokenVerification = async (token: string) => {
+    try {
+        const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                secret: process.env.NEXT_PUBLIC_RECAPTCHA_SERVER_KEY as string,
+                response: token,
+            })
+        })
+        return response.json();
+    } catch (error: any) {
+        return Error(error)
+    }
 }

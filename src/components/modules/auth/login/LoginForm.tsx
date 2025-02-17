@@ -14,10 +14,13 @@ import Link from "next/link";
 import Logo from "@/app/assets/svgs/Logo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "./loginValidation";
-import { loginUser } from "@/services/AuthService";
+import { loginUser, recaptchaTokenVerification } from "@/services/AuthService";
 import { toast } from "sonner";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useState } from "react";
 
 export default function LoginForm() {
+  const [recaptchaStatus, setRecaptchaStatus] = useState(false);
   const form = useForm({
     resolver: zodResolver(loginSchema),
   });
@@ -25,6 +28,17 @@ export default function LoginForm() {
   const {
     formState: { isSubmitting },
   } = form;
+
+  const handleRecaptcha = async (value: string | null) => {
+    try {
+      const response = await recaptchaTokenVerification(value as string);
+      if (response?.success) {
+        setRecaptchaStatus(true);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
@@ -78,7 +92,18 @@ export default function LoginForm() {
             )}
           />
 
-          <Button type="submit" className="mt-5 w-full">
+          <div className=" mt-5">
+            <ReCAPTCHA
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY as string}
+              onChange={handleRecaptcha}
+            />
+          </div>
+
+          <Button
+            disabled={!recaptchaStatus}
+            type="submit"
+            className="mt-5 w-full"
+          >
             {isSubmitting ? "Logging...." : "Login"}
           </Button>
         </form>
