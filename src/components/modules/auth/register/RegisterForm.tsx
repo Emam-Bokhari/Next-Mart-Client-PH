@@ -15,17 +15,33 @@ import Link from "next/link";
 import Logo from "@/app/assets/svgs/Logo";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registrationSchema } from "./registerValidation";
+import { registerUser } from "@/services/AuthService";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
   const form = useForm({
     resolver: zodResolver(registrationSchema),
   });
 
+  const {
+    formState: { isSubmitting },
+  } = form;
+
   const password = form.watch("password");
   const passwordConfirm = form.watch("passwordConfirm");
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
+    try {
+      const response = await registerUser(data);
+      console.log(response);
+      if (response?.success) {
+        toast.success(response?.message);
+      } else {
+        toast.error(response?.message);
+      }
+    } catch (error: any) {
+      console.error(error);
+    }
   };
 
   return (
@@ -102,7 +118,7 @@ export default function RegisterForm() {
             type="submit"
             className="w-full mt-5 "
           >
-            Register
+            {isSubmitting ? "Registering..." : "Register"}
           </Button>
         </form>
       </Form>
