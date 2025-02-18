@@ -51,28 +51,16 @@ export const loginUser = async (userData: FieldValues) => {
 }
 
 export const getCurrentUser = async () => {
-    const accessTokenCookie = (await cookies()).get("accessToken")
-
-    if (!accessTokenCookie) {
-        return { error: true, message: "Access token not found in cookies" };
-    }
-
-    const accessToken = accessTokenCookie.value;
-
+    const accessToken = (await cookies()).get("accessToken")?.value;
     let decodedData = null;
 
     if (accessToken) {
-        try {
-            decodedData = await jwtDecode(accessToken)
-            return decodedData;
-        } catch (error: any) {
-            return { error: true, message: "Error decoding access token." };
-        }
+        decodedData = await jwtDecode(accessToken);
+        return decodedData;
+    } else {
+        return null;
     }
-
-    return decodedData;
-
-}
+};
 
 export const recaptchaTokenVerification = async (token: string) => {
     try {
@@ -90,4 +78,8 @@ export const recaptchaTokenVerification = async (token: string) => {
     } catch (error: any) {
         return Error(error)
     }
+}
+
+export const logOut = async () => {
+    (await cookies()).delete("accessToken")
 }

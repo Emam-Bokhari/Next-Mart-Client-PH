@@ -1,3 +1,4 @@
+"use client";
 import Logo from "@/app/assets/svgs/Logo";
 import { Button } from "../ui/button";
 import { Heart, LogOutIcon, ShoppingBag } from "lucide-react";
@@ -11,8 +12,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { logOut } from "@/services/AuthService";
+import { useUser } from "@/context/UserContext";
+import { Fragment } from "react";
 
 export default function Navbar() {
+  const { user, setIsLoading } = useUser();
+  console.log(user);
+  const handleLogOut = () => {
+    logOut();
+    setIsLoading(true);
+  };
   return (
     <header className="border-b w-full">
       <div className="container flex justify-between items-center mx-auto h-16 px-3">
@@ -33,32 +43,38 @@ export default function Navbar() {
           <Button variant="outline" className="rounded-full p-0 size-10">
             <ShoppingBag />
           </Button>
-          <Link href="/login">
-            <Button variant="outline">Login</Button>
-          </Link>
-          <Link href="/create-shop">
-            <Button>Create Shop</Button>
-          </Link>
-          {/* dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>User</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Dashboard</DropdownMenuItem>
-              <DropdownMenuItem>My Shop</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOutIcon /> <span>LogOut</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+          {user ? (
+            <Fragment>
+              <Link href="/create-shop">
+                <Button>Create Shop</Button>
+              </Link>
+              {/* dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>User</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                  <DropdownMenuItem>My Shop</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogOut}>
+                    <LogOutIcon /> <span>LogOut</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </Fragment>
+          ) : (
+            <Link href="/login">
+              <Button variant="outline">Login</Button>
+            </Link>
+          )}
         </nav>
       </div>
     </header>
