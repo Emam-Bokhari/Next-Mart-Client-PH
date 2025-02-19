@@ -15,13 +15,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { logOut } from "@/services/AuthService";
 import { useUser } from "@/context/UserContext";
 import { Fragment } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { protectedRoutes } from "@/constants";
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
   const { user, setIsLoading } = useUser();
   console.log(user);
   const handleLogOut = () => {
     logOut();
     setIsLoading(true);
+    if (protectedRoutes.some((route) => pathname.match(route))) {
+      router.push("/");
+    }
   };
   return (
     <header className="border-b w-full">
