@@ -36,7 +36,7 @@ const data = {
     },
     {
       title: "Shop",
-      url: "/user/shop/all-products",
+      url: "#",
       icon: Bot,
       items: [
         {
