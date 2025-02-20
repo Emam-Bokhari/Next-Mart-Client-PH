@@ -30,13 +30,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ICategory } from "@/types";
+import { IBrand, ICategory } from "@/types";
 import Logo from "@/app/assets/svgs/Logo";
+import { getAllBrands } from "@/services/Brand";
+import { addProduct } from "@/services/Product";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function AddProductsForm() {
   const [imageFiles, setImageFiles] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const [categories, setCategories] = useState<ICategory[] | []>([]);
+  const [brands, setBrands] = useState<IBrand[] | []>([]);
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
@@ -86,11 +92,13 @@ export default function AddProductsForm() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [categoriesData] = await Promise.all([getAllCategories()]);
-
+      const [categoriesData, brandsData] = await Promise.all([
+        getAllCategories(),
+        getAllBrands(),
+      ]);
       setCategories(categoriesData?.data);
+      setBrands(brandsData?.data);
     };
-
     fetchData();
   }, []);
 
@@ -108,8 +116,33 @@ export default function AddProductsForm() {
         (specification[item.key] = item.value)
     );
 
-    console.log(availableColors);
-    console.log(keyFeatures);
+    const modifiedData = {
+      ...data,
+      availableColors,
+      keyFeatures,
+      specification,
+      price: parseFloat(data?.price),
+      stock: parseInt(data?.stock),
+      weight: parseFloat(data?.weight),
+    };
+
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(modifiedData));
+    for (const files of imageFiles) {
+      formData.append("images", files);
+    }
+    try {
+      const res = await addProduct(formData);
+      console.log(res);
+      if (res?.success) {
+        toast.success(res?.message);
+        router.push("/user/shop/products");
+      } else {
+        toast.error(res?.errorSources[0]?.message);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
   };
 
   return (
@@ -172,6 +205,35 @@ export default function AddProductsForm() {
                       {categories.map((category) => (
                         <SelectItem key={category?._id} value={category?._id}>
                           {category?.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="brand"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Brand</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Product Brand" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {brands.map((brand) => (
+                        <SelectItem key={brand?._id} value={brand?._id}>
+                          {brand?.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
