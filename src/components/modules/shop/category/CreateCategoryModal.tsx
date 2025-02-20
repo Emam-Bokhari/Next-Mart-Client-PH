@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { createCategory } from "@/services/Category";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -33,7 +34,21 @@ export default function CreateCategoryModal() {
   } = form;
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
+    try {
+      console.log(data);
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(data));
+      formData.append("icon", imageFiles[0] as File);
+      const res = await createCategory(formData);
+      console.log(res);
+      if (res?.success) {
+        toast.success(res?.message);
+      } else {
+        toast?.error(res?.errorSources[0]?.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
