@@ -49,6 +49,7 @@ export default function AddProductsForm() {
       weight: "",
       availableColors: [{ value: "" }],
       keyFeatures: [{ value: "" }],
+      specification: [{ key: "", value: "" }],
     },
   });
 
@@ -72,6 +73,15 @@ export default function AddProductsForm() {
 
   const addFeatures = () => {
     appendFeatures({ value: "" });
+  };
+
+  const { append: appendSpec, fields: specFields } = useFieldArray({
+    control: form.control,
+    name: "specification",
+  });
+
+  const addSpec = () => {
+    appendSpec({ key: "", value: "" });
   };
 
   useEffect(() => {
@@ -292,6 +302,54 @@ export default function AddProductsForm() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center border-t border-b py-3 my-5">
+              <p className="text-primary font-bold text-xl">Specification</p>
+              <Button
+                onClick={addSpec}
+                variant="outline"
+                className="size-10"
+                type="button"
+              >
+                <Plus className="text-primary" />
+              </Button>
+            </div>
+
+            {specFields?.map((specField, index) => (
+              <div
+                key={specField?.id}
+                className="grid grid-cols-1 gap-4 md:grid-cols-2 my-5"
+              >
+                <FormField
+                  control={form.control}
+                  name={`specification.${index}.key`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Feature name {index + 1}</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`specification.${index}.value`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Feature Description {index + 1}</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            ))}
           </div>
 
           <Button type="submit" className="mt-5 w-full" disabled={isSubmitting}>
