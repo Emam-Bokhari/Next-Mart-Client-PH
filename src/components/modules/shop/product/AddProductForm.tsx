@@ -95,7 +95,21 @@ export default function AddProductsForm() {
   }, []);
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
+    const availableColors = data?.availableColors?.map(
+      (color: { value: string }) => color?.value
+    );
+    const keyFeatures = data?.keyFeatures?.map(
+      (feature: { value: string }) => feature?.value
+    );
+    const specification: { [key: string]: string } = {};
+
+    data?.specification?.forEach(
+      (item: { key: string; value: string }) =>
+        (specification[item.key] = item.value)
+    );
+
+    console.log(availableColors);
+    console.log(keyFeatures);
   };
 
   return (
