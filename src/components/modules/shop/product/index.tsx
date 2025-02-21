@@ -7,9 +7,13 @@ import { Edit, Eye, Plus, Trash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
 
 export default function ManageProducts({ products }: { products: IProduct[] }) {
+  const [selectedIds, setSelectedIds] = useState<string[] | []>([]);
   const router = useRouter();
+  console.log(selectedIds);
 
   const handleView = (product: IProduct) => {
     console.log("Viewing product:", product);
@@ -20,6 +24,39 @@ export default function ManageProducts({ products }: { products: IProduct[] }) {
   };
 
   const columns: ColumnDef<IProduct>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => {
+            if (value) {
+              setSelectedIds((prev) => [...prev, row.original._id]);
+            } else {
+              setSelectedIds(
+                selectedIds?.filter((id) => id !== row.original._id)
+              );
+            }
+            console.log(value);
+            row.toggleSelected(!!value);
+          }}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    ,
     {
       accessorKey: "name",
       header: "Product Name",
