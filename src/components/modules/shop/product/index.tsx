@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
+import DiscountModal from "./DiscountModal";
 
 export default function ManageProducts({ products }: { products: IProduct[] }) {
   const [selectedIds, setSelectedIds] = useState<string[] | []>([]);
@@ -147,12 +148,19 @@ export default function ManageProducts({ products }: { products: IProduct[] }) {
           <Button
             onClick={() => router.push("/user/shop/products/add-product")}
             size="sm"
+            variant="outline"
           >
             Add Product <Plus />
           </Button>
+          <DiscountModal
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
+          />
         </div>
       </div>
-      <NMTable columns={columns} data={products || []} />
+      <div className="mt-5">
+        <NMTable columns={columns} data={products || []} />
+      </div>
     </div>
   );
 }

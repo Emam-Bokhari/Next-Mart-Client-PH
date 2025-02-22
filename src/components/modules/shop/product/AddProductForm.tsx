@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { IBrand, ICategory } from "@/types";
-import Logo from "@/app/assets/svgs/Logo";
+import Logo from "@/assets/svgs/Logo";
 import { getAllBrands } from "@/services/Brand";
 import { addProduct } from "@/services/Product";
 import { toast } from "sonner";
