@@ -29,6 +29,7 @@ export interface IProduct {
     averageRating: number;
     ratingCount: number;
     availableColors: string[];
+
     specification: Specification;
     keyFeatures: string[];
     slug: string;
