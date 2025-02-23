@@ -25,6 +25,26 @@ const cartSlice = createSlice({
                 return;
             }
             state.products.push({ ...action.payload, orderQuantity: 1 })
+        },
+        incrementOrderQuantity: (state, action) => {
+            const increment = state.products.find((product) => product._id === action.payload);
+            console.log(increment)
+            if (increment) {
+                increment.orderQuantity += 1;
+                return;
+            }
+        },
+        decrementOrderQuantity: (state, action) => {
+            const decrement = state.products.find((product) => product._id === action.payload);
+            console.log(decrement)
+            if (decrement && decrement.orderQuantity > 1) {
+                decrement.orderQuantity -= 1;
+                return;
+            }
+        },
+        removeOrderQuantity: (state, action) => {
+            state.products.filter((product) => product._id !== action.payload);
+
         }
     }
 })
@@ -32,5 +52,5 @@ const cartSlice = createSlice({
 export const orderedProductSelector = (state: RootState) => {
     return state.cart.products;
 }
-export const { addProduct } = cartSlice.actions
+export const { addProduct, incrementOrderQuantity, decrementOrderQuantity, removeOrderQuantity } = cartSlice.actions
 export default cartSlice.reducer;
