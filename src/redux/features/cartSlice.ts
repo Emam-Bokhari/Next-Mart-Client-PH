@@ -74,6 +74,11 @@ export const orderSelector = (state: RootState) => {
     }
 }
 
+export const grandTotalSelector = (state: RootState) => {
+    const subtotal = subTotalSelector(state)
+    const shippingCost = shippingCostSelector(state)
+    return subtotal + shippingCost;
+}
 
 export const shippingCostSelector = (state: RootState) => {
     if (state.cart.city === "Dhaka" && state.cart.products.length > 0) {
