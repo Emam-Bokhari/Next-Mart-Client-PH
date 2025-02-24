@@ -8,10 +8,14 @@ export interface ICartProduct extends IProduct {
 
 interface IInitialState {
     products: ICartProduct[]
+    city: string;
+    shippingAddress: string;
 }
 
 const initialState: IInitialState = {
-    products: []
+    products: [],
+    city: "",
+    shippingAddress: ""
 }
 
 const cartSlice = createSlice({
@@ -45,6 +49,12 @@ const cartSlice = createSlice({
         removeOrderQuantity: (state, action) => {
             state.products.filter((product) => product._id !== action.payload);
 
+        },
+        updateCity: (state, action) => {
+            state.city = action.payload
+        },
+        updateShippingAddress: (state, action) => {
+            state.shippingAddress = action.payload
         }
     }
 })
@@ -63,5 +73,13 @@ export const subTotalSelector = (state: RootState) => {
     }, 0)
 }
 
-export const { addProduct, incrementOrderQuantity, decrementOrderQuantity, removeOrderQuantity } = cartSlice.actions
+export const citySelector = (state: RootState) => {
+    return state.cart.city;
+}
+
+export const shippingAddressSelector = (state: RootState) => {
+    return state.cart.shippingAddress;
+}
+
+export const { addProduct, incrementOrderQuantity, decrementOrderQuantity, removeOrderQuantity, updateCity, updateShippingAddress } = cartSlice.actions
 export default cartSlice.reducer;
