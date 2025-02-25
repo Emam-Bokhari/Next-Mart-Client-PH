@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/UserContext";
 import { currencyFormatter } from "@/lib/currencyFormatter";
 import {
   citySelector,
@@ -12,6 +13,8 @@ import {
   subTotalSelector,
 } from "@/redux/features/cartSlice";
 import { useAppSelector } from "@/redux/hooks";
+import { createOrder } from "@/services/Cart";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function PaymentDetails() {
@@ -22,8 +25,11 @@ export default function PaymentDetails() {
   const shippingAddress = useAppSelector(shippingAddressSelector);
   const order = useAppSelector(orderSelector);
   const products = useAppSelector(orderedProductSelector);
+  const user = useUser();
+  const router = useRouter();
+  console.log(user.user);
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
     try {
       if (products.length === 0) {
         return toast.error(
@@ -36,10 +42,21 @@ export default function PaymentDetails() {
       if (!shippingAddress) {
         return toast.error("Please make sure you add shipping address");
       }
+      if (!user.user) {
+        router.push("/login");
+        toast.warning("Please login before order this product");
+        return;
+      }
+
+      const res = await createOrder(order);
+      console.log(res);
+      if (res.success) {
+        toast.success(res?.message);
+      } else {
+        toast.error(res.errorSources[0].message);
+      }
 
       toast.success("Order created successfully");
-
-      console.log(order);
     } catch (error: any) {
       console.log(error);
       toast.error(error.message || "Something went wrong!");
