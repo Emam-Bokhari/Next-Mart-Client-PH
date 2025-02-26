@@ -5,6 +5,7 @@ import { useUser } from "@/context/UserContext";
 import { currencyFormatter } from "@/lib/currencyFormatter";
 import {
   citySelector,
+  clearCart,
   grandTotalSelector,
   orderedProductSelector,
   orderSelector,
@@ -12,7 +13,7 @@ import {
   shippingCostSelector,
   subTotalSelector,
 } from "@/redux/features/cartSlice";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { createOrder } from "@/services/Cart";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -27,7 +28,8 @@ export default function PaymentDetails() {
   const products = useAppSelector(orderedProductSelector);
   const user = useUser();
   const router = useRouter();
-  console.log(user.user);
+  const dispatch = useAppDispatch();
+  console.log(order);
 
   const handleOrder = async () => {
     try {
@@ -52,6 +54,8 @@ export default function PaymentDetails() {
       console.log(res);
       if (res.success) {
         toast.success(res?.message);
+        dispatch(clearCart());
+        router.push(res?.data?.paymentUrl);
       } else {
         toast.error(res.errorSources[0].message);
       }

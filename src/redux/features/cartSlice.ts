@@ -55,6 +55,11 @@ const cartSlice = createSlice({
         },
         updateShippingAddress: (state, action) => {
             state.shippingAddress = action.payload
+        },
+        clearCart: (state) => {
+            state.city = "";
+            state.products = [];
+            state.shippingAddress = ""
         }
     }
 })
@@ -94,6 +99,7 @@ export const shippingCostSelector = (state: RootState) => {
 
 export const subTotalSelector = (state: RootState) => {
     return state.cart.products.reduce((acc, product) => {
+        console.log(state)
         if (product.offerPrice) {
             return acc + product.offerPrice * product.orderQuantity
         } else {
@@ -110,5 +116,5 @@ export const shippingAddressSelector = (state: RootState) => {
     return state.cart.shippingAddress;
 }
 
-export const { addProduct, incrementOrderQuantity, decrementOrderQuantity, removeOrderQuantity, updateCity, updateShippingAddress } = cartSlice.actions
+export const { addProduct, incrementOrderQuantity, decrementOrderQuantity, removeOrderQuantity, updateCity, updateShippingAddress, clearCart } = cartSlice.actions
 export default cartSlice.reducer;
