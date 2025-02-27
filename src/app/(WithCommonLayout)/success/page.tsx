@@ -15,7 +15,7 @@ export default function SuccessPage() {
           </h1>
           <p className="text-gray-600 mb-6 text-center">
             Thank you for your purchase! Your payment has been processed
-            successfully.
+            successfully Okay.
           </p>
 
           <Link href="/products" legacyBehavior>
